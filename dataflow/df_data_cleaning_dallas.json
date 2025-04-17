@@ -227,7 +227,8 @@
 				"          each(match(startsWith(name, \"violation\")),",
 				"               regexReplace($$, ' ', '_')",
 				" = $$)",
-				"     )) ~> sink"
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink"
 			]
 		}
 	}
