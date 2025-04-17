@@ -1,0 +1,11 @@
+{
+	"name": "foodInspectionADLS",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"sasUri": "https://foodinspection2025stg.blob.core.windows.net/?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-04-30T13:08:07Z&st=2025-04-17T05:08:07Z&spr=https,http&sig=uxfxhFvw%2Fs%2FIH8nS3%2Fr2aAybisDQZ1TjvfunVIBxw6A%3D?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-04-30T13:08:07Z&st=2025-04-17T05:08:07Z&spr=https,http&sig=uxfxhFvw%2Fs%2FIH8nS3%2Fr2aAybisDQZ1TjvfunVIBxw6A%3D"
+		}
+	}
+}
