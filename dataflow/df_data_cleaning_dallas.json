@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dallas_zipcodes",
+						"type": "DatasetReference"
+					},
+					"name": "zipcodes"
 				}
 			],
 			"sinks": [
@@ -26,13 +33,16 @@
 					"name": "derivedColumns1"
 				},
 				{
-					"name": "derivedColumns2"
-				},
-				{
 					"name": "derivedColumns3"
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -156,24 +166,17 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     multiLineRow: true) ~> source",
+				"source(output(",
+				"          zipcode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> zipcodes",
 				"source derive(restaurant_name = iif({Restaurant Name} == '3606' || {Restaurant Name} == '13209', 'Unknown', {Restaurant Name}),",
 				"          inspection_score = abs(toInteger({Inspection Score})),",
 				"          inspection_date = toDate({Inspection Date}),",
-				"          lat_long = iif(regexMatch({Lat Long Location}, '\\\\('), regexReplace({Lat Long Location}, '.*\\\\n',''), '(-9999,-9999)'),",
-				"          zipcode = toInteger(substring({Zip Code}, 0, 5))) ~> derivedColumns1",
-				"derivedColumns1 derive(latitude = toDouble(",
-				"  split(",
-				"    trim(regexReplace(lat_long, '[()]', '')),",
-				"    ','",
-				"  )[1]",
-				"),",
-				"          longitude = toDouble(",
-				"  split(",
-				"    trim(regexReplace(lat_long, '[()]', '')),",
-				"    ','",
-				"  )[2]",
-				")) ~> derivedColumns2",
-				"derivedColumns2 derive(each(match(startsWith(name, 'Violation Description')), $$ = iif(",
+				"          zip_code = toInteger(substring({Zip Code}, 0, 5))) ~> derivedColumns1",
+				"derivedColumn1 derive(each(match(startsWith(name, 'Violation Description')), $$ = iif(",
 				"  isNull($$),",
 				"  'Unknown',",
 				"  regexReplace($$, '\\\\*', '')",
@@ -187,8 +190,6 @@
 				"          inspection_date,",
 				"          zipcode,",
 				"          street_address = {Street Address},",
-				"          latitude,",
-				"          longitude,",
 				"          each(match(startsWith(name, \"Violation Description\")),",
 				"               lower(",
 				"    regexReplace($$, '\\\\s*-\\\\s*', '')",
@@ -201,6 +202,12 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivedColumns1, zipcodes join(zip_code == toInteger(zipcode),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 derive(zipcode = iif(isNull(zipcode), toInteger(-99999), toInteger(zipcode))) ~> derivedColumn1",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -217,8 +224,6 @@
 				"          inspection_date,",
 				"          zipcode,",
 				"          street_address,",
-				"          latitude,",
-				"          longitude,",
 				"          each(match(startsWith(name, \"violation\")),",
 				"               regexReplace($$, ' ', '_')",
 				" = $$)",
