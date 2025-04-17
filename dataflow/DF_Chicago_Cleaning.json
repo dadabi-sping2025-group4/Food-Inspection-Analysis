@@ -1,0 +1,103 @@
+{
+	"name": "DF_Chicago_Cleaning",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "chicagoTSV",
+						"type": "DatasetReference"
+					},
+					"name": "bronzeChicago"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "chicago_test",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Inspection ID} as integer,",
+				"          {DBA Name} as string,",
+				"          {AKA Name} as string,",
+				"          {License #} as double,",
+				"          {Facility Type} as string,",
+				"          Risk as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip as double,",
+				"          {Inspection Date} as date,",
+				"          {Inspection Type} as string,",
+				"          Results as string,",
+				"          Violations as string,",
+				"          Latitude as string,",
+				"          Longitude as string,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> bronzeChicago",
+				"aggregate1 select(mapColumn(",
+				"          inspection_id = {Inspection ID},",
+				"          dba_name = {DBA Name},",
+				"          aka_name = {AKA Name},",
+				"          {license_#} = {License #},",
+				"          facility_type = {Facility Type},",
+				"          risk = Risk,",
+				"          address = Address,",
+				"          city = City,",
+				"          state = State,",
+				"          zip = Zip,",
+				"          inspection_date = {Inspection Date},",
+				"          inspection_type = {Inspection Type},",
+				"          results = Results,",
+				"          violations = Violations,",
+				"          latitude = Latitude,",
+				"          longitude = Longitude,",
+				"          location = Location",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"bronzeChicago aggregate(groupBy({DBA Name},",
+				"          {AKA Name},",
+				"          {License #},",
+				"          {Facility Type},",
+				"          Risk,",
+				"          Address,",
+				"          City,",
+				"          State,",
+				"          Zip,",
+				"          {Inspection Date},",
+				"          {Inspection Type},",
+				"          Results,",
+				"          Violations,",
+				"          Latitude,",
+				"          Longitude,",
+				"          Location),",
+				"     {Inspection ID} = first({Inspection ID}, true())) ~> aggregate1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
