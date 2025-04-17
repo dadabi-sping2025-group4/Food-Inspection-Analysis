@@ -14,7 +14,11 @@
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"dataset": {
+						"referenceName": "ds_dallas_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
 				}
 			],
 			"transformations": [
@@ -185,15 +189,48 @@
 				"          street_address = {Street Address},",
 				"          latitude,",
 				"          longitude,",
-				"          each(match(startsWith(name, \"Violation\")),",
-				"               regexReplace($$, 'Violation Description', 'violation_description') = $$)",
+				"          each(match(startsWith(name, \"Violation Description\")),",
+				"               regexReplace(",
+				"  lower(",
+				"    regexReplace($$, '\\\\s*-\\\\s*', '')",
+				"  ),",
+				"  '\\\\s+',",
+				"  '_'",
+				")",
+				" = $$),",
+				"          each(match(startsWith(name, \"Violation Detail\")),",
+				"               regexReplace(",
+				"  lower(",
+				"    regexReplace($$, '\\\\s*-\\\\s*', '')",
+				"  ),",
+				"  '\\\\s+',",
+				"  '_'",
+				")",
+				" = $$),",
+				"          each(match(startsWith(name, \"Violation Memo\")),",
+				"               regexReplace(",
+				"  lower(",
+				"    regexReplace($$, '\\\\s*-\\\\s*', '')",
+				"  ),",
+				"  '\\\\s+',",
+				"  '_'",
+				")",
+				" = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     validateSchema: true,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     )) ~> sink"
 			]
 		}
 	}
