@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_dallas_parquet",
+						"referenceName": "ds_parquet_dallas",
 						"type": "DatasetReference"
 					},
 					"name": "sink"
@@ -219,8 +219,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
-				"     validateSchema: true,",
+				"select1 sink(allowSchemaDrift: false,",
+				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
@@ -228,8 +228,23 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          each(match(/* All input columns */ true()),",
-				"               /* Input name */ $$ = $$)",
+				"          restaurant_name,",
+				"          inspection_type,",
+				"          inspection_score,",
+				"          inspection_date,",
+				"          zipcode,",
+				"          street_address,",
+				"          latitude,",
+				"          longitude,",
+				"          each(match(startsWith(name, \"violation\")),",
+				"               regexReplace(",
+				"  lower(",
+				"    regexReplace($$, '\\\\s*-\\\\s*', '')",
+				"  ),",
+				"  '\\\\s+',",
+				"  '_'",
+				")",
+				" = $$)",
 				"     )) ~> sink"
 			]
 		}
