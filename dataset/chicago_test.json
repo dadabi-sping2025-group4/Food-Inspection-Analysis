@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "chicago_test_csv",
+				"fileName": "chicago_test_parquet",
 				"fileSystem": "silver"
 			},
 			"columnDelimiter": ",",
