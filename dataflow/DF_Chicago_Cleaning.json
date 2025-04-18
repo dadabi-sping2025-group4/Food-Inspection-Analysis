@@ -175,7 +175,7 @@
 				"          violation_memo25 as string",
 				"     ),",
 				"     format: 'parquet',",
-				"     partitionFileNames:['chicago_parquet'],",
+				"     partitionFileNames:['chicago_parquet.parquet'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
