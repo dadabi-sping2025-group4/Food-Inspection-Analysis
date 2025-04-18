@@ -1,0 +1,19 @@
+{
+	"name": "ds_dallas_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "FoodInspectionDL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
