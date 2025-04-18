@@ -1,5 +1,5 @@
 {
-	"name": "DF_Chicago_Cleaning",
+	"name": "df_data_cleaning_chicago",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
