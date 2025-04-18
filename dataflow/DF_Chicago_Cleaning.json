@@ -43,6 +43,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -152,7 +155,24 @@
 				"          zip = iif(isNull(zip), toInteger(-99999), toInteger(zip)),",
 				"          inspection_date = toDate(toString(inspection_date, 'yyyy-MM-dd'), 'yyyy-MM-dd'),",
 				"          violations = iif(isNull(violations), 'Unknown', violations)) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 select(mapColumn(",
+				"          inspection_id,",
+				"          dba_name,",
+				"          license_number,",
+				"          facility_type,",
+				"          risk,",
+				"          address,",
+				"          city,",
+				"          state,",
+				"          zip,",
+				"          inspection_date,",
+				"          inspection_type,",
+				"          results,",
+				"          violations",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          restaurant_name as string,",
