@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "bronzeChicago"
+				},
+				{
+					"dataset": {
+						"referenceName": "chicago_zipcodes",
+						"type": "DatasetReference"
+					},
+					"name": "chicagoZipcodes"
 				}
 			],
 			"sinks": [
@@ -27,6 +34,12 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +53,7 @@
 				"          Address as string,",
 				"          City as string,",
 				"          State as string,",
-				"          Zip as double,",
+				"          Zip as integer,",
 				"          {Inspection Date} as date,",
 				"          {Inspection Type} as string,",
 				"          Results as string,",
@@ -52,10 +65,15 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> bronzeChicago",
+				"source(output(",
+				"          zipcode as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> chicagoZipcodes",
 				"aggregate1 select(mapColumn(",
 				"          inspection_id = {Inspection ID},",
 				"          dba_name = {DBA Name},",
-				"          aka_name = {AKA Name},",
 				"          {license_#} = {License #},",
 				"          facility_type = {Facility Type},",
 				"          risk = Risk,",
@@ -66,10 +84,7 @@
 				"          inspection_date = {Inspection Date},",
 				"          inspection_type = {Inspection Type},",
 				"          results = Results,",
-				"          violations = Violations,",
-				"          latitude = Latitude,",
-				"          longitude = Longitude,",
-				"          location = Location",
+				"          violations = Violations",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
@@ -90,7 +105,13 @@
 				"          Longitude,",
 				"          Location),",
 				"     {Inspection ID} = first({Inspection ID}, true())) ~> aggregate1",
-				"select1 sink(allowSchemaDrift: true,",
+				"select1, chicagoZipcodes join(zip == zipcode,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 filter(isNull(city) || instr(lower(city), 'chicago') != -1) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          restaurant_name as string,",
