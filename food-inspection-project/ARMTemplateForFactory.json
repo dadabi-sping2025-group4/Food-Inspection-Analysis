@@ -107,7 +107,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/chicagoTSV')]",
+			"name": "[concat(parameters('factoryName'), '/chicago_bronze')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -479,34 +479,6 @@
 						"type": "UTF8"
 					}
 				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/FoodInspectionDL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/chicago_test')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "FoodInspectionDL",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "chicago_test_parquet",
-						"fileSystem": "silver"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/FoodInspectionDL')]"
@@ -1174,7 +1146,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "chicagoTSV",
+								"referenceName": "chicago_bronze",
 								"type": "DatasetReference"
 							},
 							"name": "bronzeChicagoTSV"
@@ -1223,6 +1195,9 @@
 						},
 						{
 							"name": "columnsSelection"
+						},
+						{
+							"name": "columnLookups"
 						}
 					],
 					"scriptLines": [
@@ -1260,7 +1235,7 @@
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> joinWithValidChicagoZipcodes",
 						"joinWithValidChicagoZipcodes filter(isNull(city) || instr(lower(city), 'chicago') != 0) ~> filterOutNonChicagoCityRecords",
-						"filterOutNonChicagoCityRecords derive(business_name = iif(isNull(business_name), 'Unknown', business_name),",
+						"columnLookups derive(business_name = iif(isNull(business_name) || trim(business_name)=='', 'Unknown', business_name),",
 						"          city = iif(isNull(city), 'Unknown', 'Chicago'),",
 						"          license_number = iif(\r",
 						"    isNull(license_number) || license_number == 0,\r",
@@ -1331,10 +1306,26 @@
 						"          inspection_date = {Inspection Date},",
 						"          inspection_type = {Inspection Type},",
 						"          results = Results,",
-						"          violations = Violations",
+						"          violations = Violations,",
+						"          aka_name = {AKA Name}",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> columnsSelection",
+						"filterOutNonChicagoCityRecords derive(business_name = iif(\r",
+						"    regexMatch(business_name, '^[0-9]+$') &&\r",
+						"    (isNull(aka_name) || regexMatch(aka_name, '^[0-9]+$')),\r",
+						"    'Unknown',\r",
+						"    iif(\r",
+						"        regexMatch(business_name, '^[0-9]+$') && !regexMatch(aka_name, '^[0-9]+$'),\r",
+						"        aka_name,\r",
+						"        business_name\r",
+						"    )\r",
+						"),",
+						"          city = iif(\r",
+						"    isNull(city) && !isNull(zipcode),\r",
+						"    'Chicago',\r",
+						"    city\r",
+						")) ~> columnLookups",
 						"finalColumnSelection sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -1431,7 +1422,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/chicagoTSV')]",
+				"[concat(variables('factoryId'), '/datasets/chicago_bronze')]",
 				"[concat(variables('factoryId'), '/datasets/chicago_zipcodes')]",
 				"[concat(variables('factoryId'), '/datasets/chicago_parquet_silver')]"
 			]
