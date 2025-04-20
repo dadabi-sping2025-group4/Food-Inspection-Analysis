@@ -55,6 +55,9 @@
 				},
 				{
 					"name": "columnsSelection"
+				},
+				{
+					"name": "columnLookups"
 				}
 			],
 			"scriptLines": [
@@ -92,7 +95,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinWithValidChicagoZipcodes",
 				"joinWithValidChicagoZipcodes filter(isNull(city) || instr(lower(city), 'chicago') != 0) ~> filterOutNonChicagoCityRecords",
-				"filterOutNonChicagoCityRecords derive(business_name = iif(isNull(business_name), 'Unknown', business_name),",
+				"columnLookups derive(business_name = iif(isNull(business_name) || trim(business_name)=='', 'Unknown', business_name),",
 				"          city = iif(isNull(city), 'Unknown', 'Chicago'),",
 				"          license_number = iif(\r",
 				"    isNull(license_number) || license_number == 0,\r",
@@ -163,10 +166,23 @@
 				"          inspection_date = {Inspection Date},",
 				"          inspection_type = {Inspection Type},",
 				"          results = Results,",
-				"          violations = Violations",
+				"          violations = Violations,",
+				"          aka_name = {AKA Name}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> columnsSelection",
+				"filterOutNonChicagoCityRecords derive(business_name = iif(\r",
+				"    regexMatch(business_name, '^[0-9]+$') &&\r",
+				"    (isNull(aka_name) || regexMatch(aka_name, '^[0-9]+$')),\r",
+				"    'Unknown',\r",
+				"    iif(\r",
+				"        regexMatch(business_name, '^[0-9]+$') && !regexMatch(aka_name, '^[0-9]+$'),\r",
+				"        aka_name,\r",
+				"        business_name\r",
+				"    )\r",
+				")\r",
+				",",
+				"          column1 = ERROR_FUNCTION('')) ~> columnLookups",
 				"finalColumnSelection sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
