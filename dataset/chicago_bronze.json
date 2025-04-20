@@ -1,5 +1,5 @@
 {
-	"name": "chicagoTSV",
+	"name": "chicago_bronze",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "FoodInspectionDL",

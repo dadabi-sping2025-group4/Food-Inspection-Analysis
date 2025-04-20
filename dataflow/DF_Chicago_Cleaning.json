@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "chicagoTSV",
+						"referenceName": "chicago_bronze",
 						"type": "DatasetReference"
 					},
 					"name": "bronzeChicagoTSV"
