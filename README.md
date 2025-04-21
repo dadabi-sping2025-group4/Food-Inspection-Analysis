@@ -70,7 +70,7 @@ By leveraging the **medallion architecture (bronze → silver → gold)** for da
 
 ### 3. **Data Loading (Fact & Dim Model)**
 - From the combined stage table, load into Snowflake **dimensions and facts**:
-- Includes traceable metadata (`job_id`, `load_dt`, `source`) 
+- Run the `Dynamic_Tables_Query.sql` to load data into dimensions and facts
 
 ---
 
