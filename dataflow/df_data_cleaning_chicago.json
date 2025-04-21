@@ -60,7 +60,7 @@
 					"name": "columnLookups"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "trimmingColumnSpaces"
 				}
 			],
 			"scriptLines": [
@@ -151,7 +151,7 @@
 				"        state",
 				"    )",
 				")) ~> handlingStateColumnNulls",
-				"derivedColumn1 derive(allKey = sha2(256, columns())) ~> allKeyDerivedColumn",
+				"trimmingColumnSpaces derive(allKey = sha2(256, columns())) ~> allKeyDerivedColumn",
 				"allKeyDerivedColumn window(over(allKey),",
 				"     asc(1, true),",
 				"     row_num = rowNumber()) ~> rowNumWindow",
@@ -198,7 +198,7 @@
 				"          State = trim(State),",
 				"          {Inspection Type} = trim({Inspection Type}),",
 				"          Results = trim(Results),",
-				"          Violations = trim(Violations)) ~> derivedColumn1",
+				"          Violations = trim(Violations)) ~> trimmingColumnSpaces",
 				"finalColumnSelection sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
