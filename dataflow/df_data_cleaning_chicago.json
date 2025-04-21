@@ -58,6 +58,9 @@
 				},
 				{
 					"name": "columnLookups"
+				},
+				{
+					"name": "trimmingColumnSpaces"
 				}
 			],
 			"scriptLines": [
@@ -148,7 +151,7 @@
 				"        state",
 				"    )",
 				")) ~> handlingStateColumnNulls",
-				"bronzeChicagoTSV derive(allKey = sha2(256, columns())) ~> allKeyDerivedColumn",
+				"trimmingColumnSpaces derive(allKey = sha2(256, columns())) ~> allKeyDerivedColumn",
 				"allKeyDerivedColumn window(over(allKey),",
 				"     asc(1, true),",
 				"     row_num = rowNumber()) ~> rowNumWindow",
@@ -186,6 +189,16 @@
 				"    'Chicago',\r",
 				"    city\r",
 				")) ~> columnLookups",
+				"bronzeChicagoTSV derive({DBA Name} = trim({DBA Name}),",
+				"          {AKA Name} = trim({AKA Name}),",
+				"          {Facility Type} = trim({Facility Type}),",
+				"          Risk = trim(Risk),",
+				"          Address = trim(Address),",
+				"          City = trim(City),",
+				"          State = trim(State),",
+				"          {Inspection Type} = trim({Inspection Type}),",
+				"          Results = trim(Results),",
+				"          Violations = trim(Violations)) ~> trimmingColumnSpaces",
 				"finalColumnSelection sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
