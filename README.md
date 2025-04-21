@@ -29,11 +29,11 @@ By leveraging the **medallion architecture (bronze → silver → gold)** for da
 ### **Chicago Food Inspections**
 - Inspections of restaurants and other food establishments conducted by the **Chicago Department of Public Health’s Food Protection Program**
 - Reviewed by licensed LEHPs (State of Illinois)
-- [🔗 Link to Dataset](#https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5/about_data)
+- [Link to Dataset](https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5/about_data)
 
 ### **Dallas Food Inspections**
 - Conducted by the **Dallas Code Compliance Services Department**
-- [🔗 Link to Dataset](#https://www.dallasopendata.com/Services/Restaurant-and-Food-Establishment-Inspections-Octo/dri5-wcct/about_data)
+- [Link to Dataset](https://www.dallasopendata.com/Services/Restaurant-and-Food-Establishment-Inspections-Octo/dri5-wcct/about_data)
 
 ---
 
@@ -75,7 +75,7 @@ By leveraging the **medallion architecture (bronze → silver → gold)** for da
 ---
 
 ## 📊 Tableau Dashboards
-- [🔗 Link](#https://prod-useast-b.online.tableau.com/#/site/neudamg7370/workbooks/2666455/views)
+- [Dashboard Link](https://prod-useast-b.online.tableau.com/#/site/neudamg7370/workbooks/2666455/views)
 
 - **Violation analysis dashboard**  
 
