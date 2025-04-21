@@ -1,5 +1,7 @@
 # 🍽️ Food Inspection Analysis
 
+[![Codelab Documentation](https://img.shields.io/badge/codelabs-4285F4?style=for-the-badge&logo=codelabs&logoColor=white)](https://codelabs-preview.appspot.com/?file_id=1f2ov63hwz5w4eOIpMY9zoq8O7EvFNwZOo-e14hldDdM#0)
+
 ## 📌 Project Overview
 
 This project presents a comprehensive food safety inspection analytics platform for restaurants and other food establishments in **Chicago** and **Dallas**, developed using publicly available government datasets. The objective is to empower public health officials, analysts, and decision-makers with actionable insights into:
@@ -34,6 +36,9 @@ By leveraging the **medallion architecture (bronze → silver → gold)** for da
 ### **Dallas Food Inspections**
 - Conducted by the **Dallas Code Compliance Services Department**
 - [Link to Dataset](https://www.dallasopendata.com/Services/Restaurant-and-Food-Establishment-Inspections-Octo/dri5-wcct/about_data)
+
+
+[Link to Dataset Mapping Document](https://1drv.ms/x/c/c66f77dc6ea96644/EVtq3AfKl5BMkpVrkoHEcAYBu1z4sk1U-aQL95x_bW9p6g?e=HTf2xA)
 
 ---
 
@@ -93,6 +98,8 @@ These dashboards help surface hotspots, compliance patterns, and risk zones to c
 
 - Built with **modular, scalable architecture** using medallion pattern  
 - All records tagged with `job_id`, `load_dt`, and `source` for auditability  
+- Dynamic Tables for dimensions and facts
+- Visualization of food inspection results 
 
 ---
 
